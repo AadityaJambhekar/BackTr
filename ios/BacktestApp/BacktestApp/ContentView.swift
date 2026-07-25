@@ -125,7 +125,7 @@ struct ContentView: View {
                         .padding(16)
                         .backtrCard()
 
-                        // Run button — flat, no gradient
+                        // Run button
                         Button {
                             Task {
                                 await vm.runBacktest()
@@ -134,7 +134,7 @@ struct ContentView: View {
                         } label: {
                             HStack(spacing: 10) {
                                 if vm.isLoading {
-                                    ProgressView().tint(.white).scaleEffect(0.9)
+                                    ProgressView().tint(.white).scaleEffect(0.85)
                                     Text("Running…")
                                         .font(.system(size: 16, weight: .semibold))
                                         .foregroundColor(.white)
@@ -149,9 +149,11 @@ struct ContentView: View {
                             }
                             .frame(maxWidth: .infinity)
                             .frame(height: 52)
-                            .background(vm.isLoading ? Color.backtrAccent.opacity(0.6) : Color.backtrAccent)
+                            .background(Color.backtrAccent)
                             .clipShape(RoundedRectangle(cornerRadius: 14))
+                            .opacity(vm.isLoading ? 0.75 : 1.0)
                         }
+                        .buttonStyle(.plain)
                         .disabled(vm.isLoading)
 
                         // Error
