@@ -52,6 +52,9 @@ def _run(ticker, start_date, end_date, strategy, initial_capital):
         raise HTTPException(422, "Dates must be YYYY-MM-DD.")
     if s >= e:
         raise HTTPException(422, "start_date must be before end_date.")
+    yesterday = date.today() - __import__('datetime').timedelta(days=1)
+    if e > yesterday:
+        e = yesterday
     if strategy not in STRATEGY_MAP:
         raise HTTPException(422, f"Unknown strategy. Valid: {list(STRATEGY_MAP)}")
     df = _fetch(ticker, str(s), str(e))
