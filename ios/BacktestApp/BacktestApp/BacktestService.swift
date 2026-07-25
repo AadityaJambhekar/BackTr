@@ -20,7 +20,7 @@ enum BacktestError: LocalizedError {
 class BacktestService: ObservableObject {
 
     // ── Swap this for your Railway URL after deployment ──────────────────
-    static var baseURL = "http://localhost:8000"
+    static var baseURL = "backtr-production.up.railway.app"
     // ────────────────────────────────────────────────────────────────────
 
     func runBacktest(ticker: String, startDate: String, endDate: String,
