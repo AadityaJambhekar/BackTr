@@ -52,7 +52,7 @@ def _run(ticker, start_date, end_date, strategy, initial_capital):
         raise HTTPException(422, "Dates must be YYYY-MM-DD.")
     if s >= e:
         raise HTTPException(422, "start_date must be before end_date.")
-    yesterday = date.today() - __import__('datetime').timedelta(days=1)
+    yesterday = date.today() - __import__('datetime').timedelta(days=7)
     if e > yesterday:
         e = yesterday
     if strategy not in STRATEGY_MAP:
