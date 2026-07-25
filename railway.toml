@@ -1,6 +1,6 @@
 [build]
 builder = "nixpacks"
-buildCommand = "pip install -r backtest-app/backend/requirements.txt"
+buildCommand = "pip3 install -r backtest-app/backend/requirements.txt"
 
 [deploy]
 startCommand = "cd backtest-app/backend && uvicorn main:app --host 0.0.0.0 --port $PORT"
