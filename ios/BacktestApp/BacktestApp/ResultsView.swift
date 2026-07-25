@@ -4,6 +4,7 @@ import Charts
 struct ResultsView: View {
     let result: BacktestResponse
     @Environment(\.dismiss) private var dismiss
+    @State private var showShare = false
 
     var body: some View {
         ZStack {
@@ -27,12 +28,13 @@ struct ResultsView: View {
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundColor(.white)
                         Spacer()
-                        Button {
-                            // share placeholder
-                        } label: {
+                        Button { showShare = true } label: {
                             Image(systemName: "square.and.arrow.up")
                                 .font(.system(size: 15))
                                 .foregroundColor(.backtrAccent)
+                        }
+                        .sheet(isPresented: $showShare) {
+                            ShareSheet(items: [shareText()])
                         }
                     }
                     .padding(.top, 8)
@@ -145,6 +147,26 @@ struct ResultsView: View {
         if v >= 1_000 { return String(format: "$%.0fk", v / 1000) }
         return String(format: "$%.0f", v)
     }
+
+    private func shareText() -> String {
+        let r = result.metrics
+        let plus = r.total_return_pct > 0 ? "+" : ""
+        let alphaPct = String(format: "%@%.1f%%", r.alpha >= 0 ? "+" : "", r.alpha)
+        return """
+        📊 Backtr — \(result.ticker) · \(strategyName()) · \(yearRange())
+
+        Total Return: \(plus)\(String(format: "%.1f", r.total_return_pct))%
+        vs Buy & Hold: \(String(format: "%.1f", r.bah_return_pct))%
+        Alpha: \(alphaPct)
+
+        Sharpe Ratio: \(String(format: "%.2f", r.sharpe_ratio))
+        Max Drawdown: \(String(format: "%.1f", r.max_drawdown_pct))%
+        Win Rate: \(String(format: "%.1f", r.win_rate_pct))%
+        Trades: \(r.num_trades)
+
+        Tested with Backtr
+        """
+    }
 }
 
 struct MetricTile: View {
@@ -217,4 +239,13 @@ struct TradeRow: View {
         let d = Int(parts[2]) ?? 0
         return "\(months[m]) \(d)"
     }
+}
+
+import UIKit
+struct ShareSheet: UIViewControllerRepresentable {
+    let items: [Any]
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: items, applicationActivities: nil)
+    }
+    func updateUIViewController(_ vc: UIActivityViewController, context: Context) {}
 }
