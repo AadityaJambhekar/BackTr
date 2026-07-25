@@ -1,0 +1,39 @@
+// Theme.swift
+// Backtr design system — colors, typography, and hex initializer.
+
+import SwiftUI
+
+extension Color {
+    static let backtrBg     = Color(hex: "0a0a0f")
+    static let backtrCard   = Color(hex: "141418")
+    static let backtrBorder = Color(hex: "222222")
+    static let backtrAccent = Color(hex: "4F8EF7")
+    static let backtrGreen  = Color(hex: "34d17a")
+    static let backtrRed    = Color(hex: "ff453a")
+    static let backtrMuted  = Color(hex: "555560")
+    static let backtrSub    = Color(hex: "888890")
+
+    init(hex: String) {
+        let h = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int: UInt64 = 0
+        Scanner(string: h).scanHexInt64(&int)
+        let r = Double((int >> 16) & 0xff) / 255
+        let g = Double((int >>  8) & 0xff) / 255
+        let b = Double((int      ) & 0xff) / 255
+        self.init(red: r, green: g, blue: b)
+    }
+}
+
+// Card modifier
+struct BacktrCard: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .background(Color.backtrCard)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.backtrBorder, lineWidth: 0.5))
+    }
+}
+
+extension View {
+    func backtrCard() -> some View { modifier(BacktrCard()) }
+}
