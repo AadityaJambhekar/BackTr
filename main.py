@@ -1,6 +1,6 @@
 from __future__ import annotations
 import logging
-from datetime import date
+from datetime import date, timedelta
 from typing import Literal
 
 import yfinance as yf
@@ -16,10 +16,18 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Backtest API", version="1.0.0")
-
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 StrategyName = Literal["macd", "rsi", "bollinger", "moving_average", "breakout", "ensemble"]
+
+STRATEGY_NAMES = {
+    "macd": "MACD",
+    "rsi": "RSI",
+    "bollinger": "Bollinger Bands",
+    "moving_average": "MA Crossover",
+    "breakout": "Breakout",
+    "ensemble": "Ensemble",
+}
 
 
 class BacktestRequest(BaseModel):
@@ -27,6 +35,13 @@ class BacktestRequest(BaseModel):
     start_date: str = Field(..., example="2020-01-01")
     end_date: str = Field(..., example="2024-01-01")
     strategy: StrategyName = Field(..., example="macd")
+    initial_capital: float = Field(default=10_000.0, ge=100)
+
+
+class CompareRequest(BaseModel):
+    ticker: str = Field(..., example="AAPL")
+    start_date: str = Field(..., example="2020-01-01")
+    end_date: str = Field(..., example="2024-01-01")
     initial_capital: float = Field(default=10_000.0, ge=100)
 
 
@@ -44,17 +59,25 @@ def _fetch(ticker, start, end):
     return df
 
 
-def _run(ticker, start_date, end_date, strategy, initial_capital):
-    ticker = ticker.upper().strip()
+def _cap_end(e: date) -> date:
+    cutoff = date.today() - timedelta(days=7)
+    return min(e, cutoff)
+
+
+def _parse_dates(start_date, end_date):
     try:
         s, e = date.fromisoformat(start_date), date.fromisoformat(end_date)
     except ValueError:
         raise HTTPException(422, "Dates must be YYYY-MM-DD.")
+    e = _cap_end(e)
     if s >= e:
         raise HTTPException(422, "start_date must be before end_date.")
-    yesterday = date.today() - __import__('datetime').timedelta(days=7)
-    if e > yesterday:
-        e = yesterday
+    return s, e
+
+
+def _run(ticker, start_date, end_date, strategy, initial_capital):
+    ticker = ticker.upper().strip()
+    s, e = _parse_dates(start_date, end_date)
     if strategy not in STRATEGY_MAP:
         raise HTTPException(422, f"Unknown strategy. Valid: {list(STRATEGY_MAP)}")
     df = _fetch(ticker, str(s), str(e))
@@ -66,20 +89,23 @@ def _run(ticker, start_date, end_date, strategy, initial_capital):
 def health():
     return {"status": "ok"}
 
+
 @app.get("/strategies")
 def list_strategies():
     return {"strategies": [
         {"id": "macd",           "description": "MACD crossover (12/26/9)"},
-        {"id": "rsi",            "description": "RSI mean-reversion (period 14, buy<30, sell>70)"},
+        {"id": "rsi",            "description": "RSI mean-reversion (period 14)"},
         {"id": "bollinger",      "description": "Bollinger Bands (20-day, ±2σ)"},
         {"id": "moving_average", "description": "SMA crossover (fast 20, slow 50)"},
         {"id": "breakout",       "description": "Channel breakout (20-day high/low)"},
         {"id": "ensemble",       "description": "Majority vote across all 5 strategies"},
     ]}
 
+
 @app.post("/backtest")
 def backtest_post(req: BacktestRequest):
     return _run(req.ticker, req.start_date, req.end_date, req.strategy, req.initial_capital)
+
 
 @app.get("/backtest")
 def backtest_get(
@@ -90,3 +116,41 @@ def backtest_get(
     initial_capital: float = Query(default=10_000.0),
 ):
     return _run(ticker, start_date, end_date, strategy, initial_capital)
+
+
+@app.post("/compare")
+def compare_post(req: CompareRequest):
+    ticker = req.ticker.upper().strip()
+    s, e = _parse_dates(req.start_date, req.end_date)
+    df = _fetch(ticker, str(s), str(e))
+
+    results = []
+    for strategy_id, signal_fn in STRATEGY_MAP.items():
+        try:
+            r = run_backtest(df, signal_fn(df), req.initial_capital)
+            m = r["metrics"]
+            results.append({
+                "strategy": strategy_id,
+                "strategy_name": STRATEGY_NAMES.get(strategy_id, strategy_id),
+                "total_return_pct": m["total_return_pct"],
+                "bah_return_pct": m["bah_return_pct"],
+                "alpha": m["total_return_pct"] - m["bah_return_pct"],
+                "sharpe_ratio": m["sharpe_ratio"],
+                "win_rate_pct": m["win_rate_pct"],
+                "max_drawdown_pct": m["max_drawdown_pct"],
+                "num_trades": m["num_trades"],
+                "final_equity": m["final_equity"],
+            })
+        except Exception:
+            pass
+
+    results.sort(key=lambda x: x["total_return_pct"], reverse=True)
+    bah = results[0]["bah_return_pct"] if results else 0
+
+    return {
+        "ticker": ticker,
+        "start_date": req.start_date,
+        "end_date": req.end_date,
+        "bah_return_pct": bah,
+        "results": results,
+    }
