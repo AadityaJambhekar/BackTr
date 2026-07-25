@@ -16,6 +16,7 @@
 		AA000007 /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100007; };
 		AA000008 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100008; };
 		AA000009 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100009; };
+		AA000010 /* CompareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100010; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		AA100007 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
 		AA100008 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		AA100009 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		AA100010 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompareView.swift; sourceTree = "<group>"; };
 		AA200001 = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BacktestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -43,7 +45,7 @@
 /* Begin PBXGroup section */
 		AA400001 = {
 			isa = PBXGroup;
-			children = (AA100001, AA100002, AA100003, AA100004, AA100005, AA100006, AA100007, AA100008, AA100009);
+			children = (AA100001, AA100002, AA100003, AA100004, AA100005, AA100006, AA100007, AA100008, AA100009, AA100010);
 			path = BacktestApp;
 			sourceTree = "<group>";
 		};
@@ -109,7 +111,7 @@
 		AA600001 = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
-			files = (AA000001, AA000002, AA000003, AA000004, AA000005, AA000006, AA000007, AA000008, AA000009);
+			files = (AA000001, AA000002, AA000003, AA000004, AA000005, AA000006, AA000007, AA000008, AA000009, AA000010);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
