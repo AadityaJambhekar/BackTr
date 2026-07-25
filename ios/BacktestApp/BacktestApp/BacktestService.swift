@@ -19,23 +19,17 @@ enum BacktestError: LocalizedError {
 @MainActor
 class BacktestService: ObservableObject {
 
-    // ── Swap this for your Railway URL after deployment ──────────────────
+    // ── Your Railway URL ─────────────────────────────────────────────────
     static var baseURL = "https://backtr-production.up.railway.app"
     // ────────────────────────────────────────────────────────────────────
 
-    func runBacktest(ticker: String, startDate: String, endDate: String,
-                     strategy: String, initialCapital: Double = 10_000) async throws -> BacktestResponse {
-
-        guard let url = URL(string: "\(Self.baseURL)/backtest") else { throw BacktestError.badURL }
-
+    private func post<Req: Encodable, Res: Decodable>(path: String, body: Req) async throws -> Res {
+        guard let url = URL(string: "\(Self.baseURL)\(path)") else { throw BacktestError.badURL }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.timeoutInterval = 60
-        request.httpBody = try JSONEncoder().encode(BacktestRequest(
-            ticker: ticker.uppercased().trimmingCharacters(in: .whitespaces),
-            start_date: startDate, end_date: endDate,
-            strategy: strategy, initial_capital: initialCapital))
+        request.timeoutInterval = 90
+        request.httpBody = try JSONEncoder().encode(body)
 
         let (data, response): (Data, URLResponse)
         do { (data, response) = try await URLSession.shared.data(for: request) }
@@ -46,7 +40,23 @@ class BacktestService: ObservableObject {
                 String(data: data, encoding: .utf8) ?? "Unknown error")
         }
 
-        do { return try JSONDecoder().decode(BacktestResponse.self, from: data) }
+        do { return try JSONDecoder().decode(Res.self, from: data) }
         catch { throw BacktestError.decodingError(error) }
+    }
+
+    func runBacktest(ticker: String, startDate: String, endDate: String,
+                     strategy: String, initialCapital: Double = 10_000) async throws -> BacktestResponse {
+        try await post(path: "/backtest", body: BacktestRequest(
+            ticker: ticker.uppercased().trimmingCharacters(in: .whitespaces),
+            start_date: startDate, end_date: endDate,
+            strategy: strategy, initial_capital: initialCapital))
+    }
+
+    func runCompare(ticker: String, startDate: String, endDate: String,
+                    initialCapital: Double = 10_000) async throws -> CompareResponse {
+        try await post(path: "/compare", body: CompareRequest(
+            ticker: ticker.uppercased().trimmingCharacters(in: .whitespaces),
+            start_date: startDate, end_date: endDate,
+            initial_capital: initialCapital))
     }
 }
