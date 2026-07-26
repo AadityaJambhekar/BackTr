@@ -11,7 +11,7 @@ struct BacktestAppApp: App {
                     HomeView(showHome: $showHome)
                         .transition(.opacity)
                 } else {
-                    ContentView()
+                    ContentView(showHome: $showHome)
                         .transition(.opacity)
                 }
             }

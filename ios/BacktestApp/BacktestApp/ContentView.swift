@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Binding var showHome: Bool
     @StateObject private var vm = BacktestViewModel()
     @State private var showResults = false
     @State private var showStrategyPicker = false
@@ -35,15 +36,28 @@ struct ContentView: View {
                                     .kerning(-0.5)
                             }
                             Spacer()
-                            Button {
-                                Haptics.tap()
-                                showSaved = true
-                            } label: {
-                                Image(systemName: savedStore.items.isEmpty ? "bookmark" : "bookmark.fill")
-                                    .font(.system(size: 16))
-                                    .foregroundColor(.backtrAccent)
+                            HStack(spacing: 16) {
+                                Button {
+                                    Haptics.tap()
+                                    showSaved = true
+                                } label: {
+                                    Image(systemName: savedStore.items.isEmpty ? "bookmark" : "bookmark.fill")
+                                        .font(.system(size: 16))
+                                        .foregroundColor(.backtrAccent)
+                                }
+                                .buttonStyle(.plain)
+                                Button {
+                                    Haptics.tap()
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        showHome = true
+                                    }
+                                } label: {
+                                    Image(systemName: "house")
+                                        .font(.system(size: 16))
+                                        .foregroundColor(.backtrAccent)
+                                }
+                                .buttonStyle(.plain)
                             }
-                            .buttonStyle(.plain)
                         }
                         .padding(.top, 8)
                         .padding(.bottom, 4)
@@ -402,4 +416,4 @@ struct StrategyPickerView: View {
     }
 }
 
-#Preview { ContentView() }
+#Preview { ContentView(showHome: .constant(false)) }

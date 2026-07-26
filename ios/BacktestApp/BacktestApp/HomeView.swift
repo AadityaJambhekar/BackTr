@@ -15,14 +15,11 @@ struct HomeView: View {
 
                 // Logo
                 VStack(spacing: 14) {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(Color.backtrAccent)
-                            .frame(width: 80, height: 80)
-                        Text("B")
-                            .font(.system(size: 42, weight: .bold))
-                            .foregroundColor(.white)
-                    }
+                    Image("LogoMark")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 80, height: 80)
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
 
                     HStack(spacing: 0) {
                         Text("Back")

@@ -48,7 +48,7 @@ struct ResultsView: View {
                                     .foregroundColor(.backtrAccent)
                             }
                             .sheet(isPresented: $showShare) {
-                                ShareSheet(items: [shareText()])
+                                ShareSheet(items: shareItems())
                             }
                         }
                     }
@@ -236,6 +236,89 @@ struct ResultsView: View {
 
         Tested with Backtr
         """
+    }
+
+    @MainActor
+    private func shareImage() -> UIImage? {
+        let renderer = ImageRenderer(content: ShareCardView(result: result, strategyName: strategyName(), yearRange: yearRange()))
+        renderer.scale = UIScreen.main.scale
+        return renderer.uiImage
+    }
+
+    private func shareItems() -> [Any] {
+        var items: [Any] = []
+        if let image = shareImage() { items.append(image) }
+        items.append(shareText())
+        return items
+    }
+}
+
+struct ShareCardView: View {
+    let result: BacktestResponse
+    let strategyName: String
+    let yearRange: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            HStack(spacing: 10) {
+                Image("LogoMark")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 34, height: 34)
+                    .clipShape(RoundedRectangle(cornerRadius: 9))
+                VStack(alignment: .leading, spacing: 1) {
+                    HStack(spacing: 0) {
+                        Text("Back").foregroundColor(.white)
+                        Text("tr").foregroundColor(.backtrAccent)
+                    }
+                    .font(.system(size: 16, weight: .bold))
+                    Text("\(result.ticker) · \(strategyName) · \(yearRange)")
+                        .font(.system(size: 11))
+                        .foregroundColor(.backtrMuted)
+                }
+                Spacer()
+            }
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(formatPct(result.metrics.total_return_pct))
+                    .font(.system(size: 44, weight: .bold))
+                    .foregroundColor(result.metrics.total_return_pct >= 0 ? .backtrGreen : .backtrRed)
+                Text("vs Buy & Hold \(formatPct(result.metrics.bah_return_pct)) · Alpha \(formatPct(result.metrics.alpha))")
+                    .font(.system(size: 12))
+                    .foregroundColor(.backtrSub)
+            }
+
+            HStack(spacing: 0) {
+                shareStat("SHARPE", String(format: "%.2f", result.metrics.sharpe_ratio))
+                shareStat("MAX DD", formatPct(result.metrics.max_drawdown_pct))
+                shareStat("WIN RATE", String(format: "%.0f%%", result.metrics.win_rate_pct))
+                shareStat("TRADES", "\(result.metrics.num_trades)")
+            }
+            .padding(.vertical, 12)
+            .background(Color.backtrBg)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+        .padding(20)
+        .frame(width: 360)
+        .background(Color.backtrCard)
+    }
+
+    private func shareStat(_ label: String, _ value: String) -> some View {
+        VStack(spacing: 3) {
+            Text(label)
+                .font(.system(size: 8, weight: .semibold))
+                .foregroundColor(.backtrMuted)
+                .tracking(0.4)
+            Text(value)
+                .font(.system(size: 13, weight: .bold))
+                .foregroundColor(.white)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private func formatPct(_ v: Double) -> String {
+        let prefix = v > 0 ? "+" : ""
+        return String(format: "\(prefix)%.1f%%", v)
     }
 }
 

@@ -7,7 +7,7 @@ struct TermsOfServiceView: View {
         ZStack {
             Color.backtrBg.ignoresSafeArea()
             ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 0) {
 
                     // Nav
                     HStack {
@@ -23,74 +23,96 @@ struct TermsOfServiceView: View {
                         .buttonStyle(.plain)
                         Spacer()
                     }
+                    .padding(.horizontal, 16)
                     .padding(.top, 8)
+                    .padding(.bottom, 16)
 
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Terms of Service")
-                            .font(.system(size: 26, weight: .bold))
-                            .foregroundColor(.white)
-                        Text("Last updated July 2026")
-                            .font(.system(size: 12))
-                            .foregroundColor(.backtrMuted)
-                    }
-
-                    // Prominent disclaimer callout
-                    HStack(alignment: .top, spacing: 12) {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .font(.system(size: 16))
-                            .foregroundColor(.backtrRed)
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Not Financial Advice")
-                                .font(.system(size: 14, weight: .bold))
+                    // Document
+                    VStack(alignment: .leading, spacing: 22) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("TERMS OF SERVICE")
+                                .font(.system(size: 22, weight: .bold, design: .serif))
                                 .foregroundColor(.white)
-                            Text("Backtr is a hobby project built for education and entertainment. Nothing in this app is investment, financial, tax, or legal advice, and it should not be relied on to make real trading or investment decisions.")
-                                .font(.system(size: 13))
-                                .foregroundColor(.backtrSub)
-                                .fixedSize(horizontal: false, vertical: true)
+                                .tracking(0.5)
+                            Text("Effective Date: July 26, 2026")
+                                .font(.system(size: 12, design: .serif))
+                                .italic()
+                                .foregroundColor(.backtrMuted)
                         }
+
+                        Rectangle()
+                            .fill(Color.backtrBorder)
+                            .frame(height: 1)
+
+                        Text("These Terms of Service (\"Terms\") govern your access to and use of the Backtr mobile application (the \"App\"), operated as an independent, individually-developed hobby project. By downloading, accessing, or using the App, you agree to be bound by these Terms. If you do not agree, you should not use the App.")
+                            .documentBody()
+
+                        // Prominent disclaimer callout
+                        HStack(alignment: .top, spacing: 12) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .font(.system(size: 15))
+                                .foregroundColor(.backtrRed)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("NOT FINANCIAL ADVICE")
+                                    .font(.system(size: 12, weight: .bold, design: .serif))
+                                    .tracking(0.5)
+                                    .foregroundColor(.white)
+                                Text("The App is provided solely for education and entertainment. Nothing in the App constitutes investment, financial, tax, or legal advice, and none of it should be relied upon to make real trading or investment decisions.")
+                                    .font(.system(size: 13, design: .serif))
+                                    .foregroundColor(.backtrSub)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
+                        .padding(16)
+                        .background(Color.backtrRed.opacity(0.08))
+                        .overlay(Rectangle().frame(width: 3).foregroundColor(.backtrRed), alignment: .leading)
+
+                        tosSection(
+                            "1. Nature of the Service",
+                            "The App simulates the hypothetical historical performance of rules-based trading strategies against past market data. These simulations do not represent real trades, do not guarantee similar future results, and do not account for every factor that could affect real-world performance, including but not limited to slippage, liquidity constraints, taxes, order execution delays, and changes in market structure. The App is provided strictly for research, learning, and entertainment purposes."
+                        )
+
+                        tosSection(
+                            "2. No Investment Advice",
+                            "Nothing produced by the App — including but not limited to backtest results, performance metrics, benchmark comparisons, or any automatically generated commentary — constitutes financial, investment, legal, or tax advice, or a recommendation to buy, sell, or hold any security or financial instrument. You are solely responsible for any decisions made in connection with your use of the App, and you should consult a licensed financial advisor before making any investment decision. Past performance, whether real or simulated, is not indicative of future results."
+                        )
+
+                        tosSection(
+                            "3. Data Sources & Accuracy",
+                            "Market data displayed or used by the App is sourced from third-party data providers and may be delayed, incomplete, revised, or contain inaccuracies. The developer makes no warranty, express or implied, as to the accuracy, completeness, reliability, or timeliness of any data, calculation, or figure presented within the App."
+                        )
+
+                        tosSection(
+                            "4. No Warranty",
+                            "The App is provided \"as is\" and \"as available,\" without warranties of any kind, whether express, implied, or statutory, including without limitation any warranty of merchantability, fitness for a particular purpose, or non-infringement."
+                        )
+
+                        tosSection(
+                            "5. Limitation of Liability",
+                            "To the fullest extent permitted by applicable law, the developer shall not be liable for any direct, indirect, incidental, consequential, or special damages — including without limitation trading or investment losses — arising out of or in connection with your access to, use of, or inability to use the App."
+                        )
+
+                        tosSection(
+                            "6. Changes to These Terms",
+                            "These Terms may be revised from time to time. Material changes will be reflected by an updated Effective Date above. Continued use of the App following any such change constitutes your acceptance of the revised Terms."
+                        )
+
+                        tosSection(
+                            "7. Governing Law",
+                            "These Terms shall be governed by and construed in accordance with the laws applicable in the developer's jurisdiction of residence, without regard to conflict-of-law principles."
+                        )
+
+                        tosSection(
+                            "8. Contact",
+                            "Questions regarding these Terms may be directed to the developer through the App's listing on the Apple App Store."
+                        )
                     }
-                    .padding(16)
-                    .background(Color.backtrRed.opacity(0.08))
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
-                    .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.backtrRed.opacity(0.3), lineWidth: 1))
-
-                    tosSection(
-                        "1. Acceptance of Terms",
-                        "By downloading, accessing, or using Backtr (\"the App\"), you agree to be bound by these Terms of Service. If you do not agree, please do not use the App."
-                    )
-
-                    tosSection(
-                        "2. For Entertainment & Educational Use Only",
-                        "The App simulates the historical performance of trading strategies against past market data. These simulations are hypothetical, do not reflect real trading, and do not account for every real-world factor that could affect actual results — including slippage, liquidity, taxes, and order execution. The App is provided purely for research, learning, and entertainment purposes."
-                    )
-
-                    tosSection(
-                        "3. Not Financial Advice",
-                        "Nothing produced by the App — including backtest results, performance metrics, or the automatically generated \"Why\" analysis — constitutes financial, investment, legal, or tax advice, or a recommendation to buy, sell, or hold any security. You should consult a licensed financial advisor before making any investment decision. Past performance, whether real or simulated, is not indicative of future results."
-                    )
-
-                    tosSection(
-                        "4. Data & Accuracy",
-                        "Market data is sourced from third-party providers and may be delayed, incomplete, or contain errors. Backtr makes no warranty, express or implied, as to the accuracy, completeness, or timeliness of any data or calculation shown in the App."
-                    )
-
-                    tosSection(
-                        "5. Limitation of Liability",
-                        "The App is provided \"as is\" without warranties of any kind. To the fullest extent permitted by law, the developer is not liable for any loss or damage — including trading or investment losses — arising from your use of, or reliance on, the App."
-                    )
-
-                    tosSection(
-                        "6. Changes to These Terms",
-                        "These Terms may be updated from time to time. Continued use of the App after changes are posted constitutes acceptance of the revised Terms."
-                    )
-
-                    tosSection(
-                        "7. Contact",
-                        "Questions about these Terms can be sent to the developer via the App Store listing."
-                    )
+                    .padding(20)
+                    .background(Color.backtrCard)
+                    .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.backtrBorder, lineWidth: 0.5))
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 40)
                 }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 40)
             }
         }
         .preferredColorScheme(.dark)
@@ -98,13 +120,22 @@ struct TermsOfServiceView: View {
 
     private func tosSection(_ title: String, _ body: String) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(title)
-                .font(.system(size: 14, weight: .semibold))
+            Text(title.uppercased())
+                .font(.system(size: 13, weight: .bold, design: .serif))
+                .tracking(0.4)
                 .foregroundColor(.white)
             Text(body)
-                .font(.system(size: 13))
-                .foregroundColor(.backtrSub)
-                .fixedSize(horizontal: false, vertical: true)
+                .documentBody()
         }
+    }
+}
+
+private extension Text {
+    func documentBody() -> some View {
+        self
+            .font(.system(size: 13, design: .serif))
+            .foregroundColor(.backtrSub)
+            .lineSpacing(4)
+            .fixedSize(horizontal: false, vertical: true)
     }
 }
