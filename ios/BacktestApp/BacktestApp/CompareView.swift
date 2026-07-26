@@ -165,10 +165,7 @@ struct StatChip: View {
 
     var body: some View {
         VStack(spacing: 3) {
-            Text(label)
-                .font(.system(size: 8, weight: .semibold))
-                .foregroundColor(.backtrMuted)
-                .kerning(0.4)
+            SectionLabel(label)
             Text(value)
                 .font(.system(size: 13, weight: .bold))
                 .foregroundColor(color)

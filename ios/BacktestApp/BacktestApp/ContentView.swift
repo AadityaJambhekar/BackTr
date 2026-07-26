@@ -40,15 +40,11 @@ struct ContentView: View {
 
                         // Ticker card
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("TICKER")
-                                .font(.system(size: 10, weight: .semibold))
-                                .foregroundColor(.backtrMuted)
-                                .kerning(0.8)
+                            SectionLabel("Ticker")
 
                             TextField("e.g. AAPL", text: $vm.ticker)
                                 .font(.system(size: 28, weight: .bold))
                                 .foregroundColor(.white)
-                                .kerning(-0.5)
                                 .textInputAutocapitalization(.characters)
                                 .autocorrectionDisabled()
 
@@ -78,10 +74,7 @@ struct ContentView: View {
 
                         // Date range
                         VStack(alignment: .leading, spacing: 10) {
-                            Text("DATE RANGE")
-                                .font(.system(size: 10, weight: .semibold))
-                                .foregroundColor(.backtrMuted)
-                                .kerning(0.8)
+                            SectionLabel("Date Range")
 
                             HStack(spacing: 8) {
                                 ForEach([1, 3, 5], id: \.self) { yr in
@@ -117,10 +110,7 @@ struct ContentView: View {
                         } label: {
                             HStack {
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text("STRATEGY")
-                                        .font(.system(size: 10, weight: .semibold))
-                                        .foregroundColor(.backtrMuted)
-                                        .kerning(0.8)
+                                    SectionLabel("Strategy")
                                     Text(vm.selectedStrategy.name)
                                         .font(.system(size: 17, weight: .bold))
                                         .foregroundColor(.white)
@@ -140,10 +130,7 @@ struct ContentView: View {
 
                         // Capital
                         VStack(alignment: .leading, spacing: 6) {
-                            Text("INITIAL CAPITAL")
-                                .font(.system(size: 10, weight: .semibold))
-                                .foregroundColor(.backtrMuted)
-                                .kerning(0.8)
+                            SectionLabel("Initial Capital")
                             HStack(spacing: 2) {
                                 Text("$")
                                     .font(.system(size: 22, weight: .bold))

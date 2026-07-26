@@ -43,10 +43,7 @@ struct HomeView: View {
 
                 // How to use
                 VStack(alignment: .leading, spacing: 0) {
-                    Text("HOW IT WORKS")
-                        .font(.system(size: 10, weight: .semibold))
-                        .foregroundColor(.backtrMuted)
-                        .kerning(1)
+                    SectionLabel("How It Works")
                         .padding(.bottom, 14)
 
                     StepRow(number: "1", title: "Pick a stock", subtitle: "Enter any ticker — AAPL, TSLA, MSFT")

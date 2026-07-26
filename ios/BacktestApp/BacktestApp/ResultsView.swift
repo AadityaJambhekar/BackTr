@@ -39,36 +39,13 @@ struct ResultsView: View {
                     }
                     .padding(.top, 8)
 
-                    // AI insight
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack(spacing: 6) {
-                            Image(systemName: "sparkles")
-                                .font(.system(size: 12, weight: .semibold))
-                                .foregroundColor(.backtrAccent)
-                            Text("AI INSIGHT")
-                                .font(.system(size: 11, weight: .semibold))
-                                .foregroundColor(.backtrMuted)
-                                .kerning(0.4)
-                        }
-                        Text(result.ai_insight)
-                            .font(.system(size: 13))
-                            .foregroundColor(.backtrSub)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    .padding(16)
-                    .backtrCard()
-
-                    // Hero return
+                    // Hero return — the number that matters most, given real visual weight
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("TOTAL RETURN · \(yearRange())")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundColor(.backtrMuted)
-                            .kerning(0.4)
+                        SectionLabel("Total Return · \(yearRange())")
 
                         Text(formatPct(result.metrics.total_return_pct, showPlus: true))
-                            .font(.system(size: 52, weight: .bold))
+                            .font(.system(size: 56, weight: .bold))
                             .foregroundColor(result.metrics.total_return_pct >= 0 ? .backtrGreen : .backtrRed)
-                            .kerning(-2)
 
                         HStack(spacing: 6) {
                             Text("vs Buy & Hold \(formatPct(result.metrics.bah_return_pct, showPlus: true))")
@@ -80,8 +57,36 @@ struct ResultsView: View {
                         }
                         .font(.system(size: 12))
                     }
-                    .padding(16)
-                    .backtrCard()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(20)
+                    .background(
+                        LinearGradient(
+                            colors: [(result.metrics.total_return_pct >= 0 ? Color.backtrGreen : Color.backtrRed).opacity(0.14), Color.backtrCard],
+                            startPoint: .top, endPoint: .bottom
+                        )
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 22))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 22)
+                            .stroke((result.metrics.total_return_pct >= 0 ? Color.backtrGreen : Color.backtrRed).opacity(0.25), lineWidth: 1)
+                    )
+
+                    // Why — plain-language read on the numbers, styled as an annotation, not a feature card
+                    HStack(alignment: .top, spacing: 12) {
+                        Rectangle()
+                            .fill(Color.backtrAccent.opacity(0.5))
+                            .frame(width: 2)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Why")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundColor(.backtrSub)
+                            Text(result.ai_insight)
+                                .font(.system(size: 13))
+                                .foregroundColor(.backtrSub)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                    .padding(.vertical, 4)
 
                     // Metrics grid
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
@@ -101,10 +106,7 @@ struct ResultsView: View {
 
                     // Chart
                     VStack(alignment: .leading, spacing: 10) {
-                        Text("EQUITY CURVE")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundColor(.backtrMuted)
-                            .kerning(0.4)
+                        SectionLabel("Equity Curve")
                         EquityChartView(equityCurve: result.equity_curve, bahCurve: result.bah_curve, spyCurve: result.spy_curve)
                     }
                     .padding(16)
@@ -113,10 +115,7 @@ struct ResultsView: View {
                     // Trade log
                     VStack(alignment: .leading, spacing: 10) {
                         HStack {
-                            Text("TRADE LOG")
-                                .font(.system(size: 11, weight: .semibold))
-                                .foregroundColor(.backtrMuted)
-                                .kerning(0.4)
+                            SectionLabel("Trade Log")
                             Spacer()
                             Text("\(result.trade_log.count) trades")
                                 .font(.system(size: 11, weight: .semibold))
@@ -183,7 +182,7 @@ struct ResultsView: View {
         let plus = r.total_return_pct > 0 ? "+" : ""
         let alphaPct = String(format: "%@%.1f%%", r.alpha >= 0 ? "+" : "", r.alpha)
         return """
-        📊 Backtr — \(result.ticker) · \(strategyName()) · \(yearRange())
+        Backtr — \(result.ticker) · \(strategyName()) · \(yearRange())
 
         Total Return: \(plus)\(String(format: "%.1f", r.total_return_pct))%
         vs Buy & Hold: \(String(format: "%.1f", r.bah_return_pct))%
@@ -209,20 +208,16 @@ struct MetricTile: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(label)
-                .font(.system(size: 9, weight: .semibold))
-                .foregroundColor(.backtrMuted)
-                .kerning(0.4)
+            SectionLabel(label)
             Text(value)
                 .font(.system(size: 18, weight: .bold))
                 .foregroundColor(color)
-                .kerning(-0.4)
                 .minimumScaleFactor(0.7)
                 .lineLimit(1)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(12)
-        .backtrCard()
+        .backtrCard(radius: 12)
     }
 }
 

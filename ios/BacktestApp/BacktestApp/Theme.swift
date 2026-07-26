@@ -34,14 +34,28 @@ extension Color {
 
 // Card modifier
 struct BacktrCard: ViewModifier {
+    var radius: CGFloat = 16
     func body(content: Content) -> some View {
         content
             .background(Color.backtrCard)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-            .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.backtrBorder, lineWidth: 0.5))
+            .clipShape(RoundedRectangle(cornerRadius: radius))
+            .overlay(RoundedRectangle(cornerRadius: radius).stroke(Color.backtrBorder, lineWidth: 0.5))
     }
 }
 
 extension View {
-    func backtrCard() -> some View { modifier(BacktrCard()) }
+    func backtrCard(radius: CGFloat = 16) -> some View { modifier(BacktrCard(radius: radius)) }
+}
+
+/// The small caps section header used above input groups (TICKER, STRATEGY, etc).
+/// One definition so the whole app's micro-labels move together.
+struct SectionLabel: View {
+    let text: String
+    init(_ text: String) { self.text = text }
+    var body: some View {
+        Text(text.uppercased())
+            .font(.system(size: 10, weight: .semibold))
+            .foregroundColor(.backtrMuted)
+            .tracking(0.6)
+    }
 }
