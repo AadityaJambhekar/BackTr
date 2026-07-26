@@ -2,6 +2,14 @@
 // Backtr design system — colors, typography, and hex initializer.
 
 import SwiftUI
+import UIKit
+
+enum Haptics {
+    static func tap() { UIImpactFeedbackGenerator(style: .light).impactOccurred() }
+    static func selection() { UISelectionFeedbackGenerator().selectionChanged() }
+    static func success() { UINotificationFeedbackGenerator().notificationOccurred(.success) }
+    static func error() { UINotificationFeedbackGenerator().notificationOccurred(.error) }
+}
 
 extension Color {
     static let backtrBg     = Color(hex: "0a0a0f")

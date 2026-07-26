@@ -14,7 +14,7 @@ struct ResultsView: View {
 
                     // Nav
                     HStack {
-                        Button { dismiss() } label: {
+                        Button { Haptics.tap(); dismiss() } label: {
                             HStack(spacing: 4) {
                                 Image(systemName: "chevron.left")
                                     .font(.system(size: 14, weight: .semibold))
@@ -28,7 +28,7 @@ struct ResultsView: View {
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundColor(.white)
                         Spacer()
-                        Button { showShare = true } label: {
+                        Button { Haptics.tap(); showShare = true } label: {
                             Image(systemName: "square.and.arrow.up")
                                 .font(.system(size: 15))
                                 .foregroundColor(.backtrAccent)

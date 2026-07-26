@@ -57,6 +57,7 @@ struct ContentView: View {
                                 HStack(spacing: 8) {
                                     ForEach(quickTickers, id: \.self) { t in
                                         Button {
+                                            Haptics.selection()
                                             vm.ticker = t
                                         } label: {
                                             Text(t)
@@ -85,6 +86,7 @@ struct ContentView: View {
                             HStack(spacing: 8) {
                                 ForEach([1, 3, 5], id: \.self) { yr in
                                     Button {
+                                        Haptics.selection()
                                         selectedYears = yr
                                         vm.endDate = Date()
                                         vm.startDate = Calendar.current.date(byAdding: .year, value: -yr, to: Date()) ?? Date()
@@ -109,7 +111,10 @@ struct ContentView: View {
                         .backtrCard()
 
                         // Strategy picker
-                        Button { showStrategyPicker = true } label: {
+                        Button {
+                            Haptics.tap()
+                            showStrategyPicker = true
+                        } label: {
                             HStack {
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text("STRATEGY")
@@ -154,9 +159,15 @@ struct ContentView: View {
 
                         // Run button
                         Button {
+                            Haptics.tap()
                             Task {
                                 await vm.runBacktest()
-                                if vm.result != nil { showResults = true }
+                                if vm.result != nil {
+                                    Haptics.success()
+                                    showResults = true
+                                } else {
+                                    Haptics.error()
+                                }
                             }
                         } label: {
                             HStack(spacing: 10) {
@@ -185,6 +196,7 @@ struct ContentView: View {
 
                         // Compare button
                         Button {
+                            Haptics.tap()
                             Task { await runCompare() }
                         } label: {
                             HStack(spacing: 8) {
@@ -249,8 +261,10 @@ struct ContentView: View {
                 ticker: vm.ticker,
                 startDate: df.string(from: vm.startDate),
                 endDate: df.string(from: vm.endDate))
+            Haptics.success()
             showCompare = true
         } catch {
+            Haptics.error()
             compareError = error.localizedDescription
         }
         isComparing = false
@@ -301,6 +315,7 @@ struct StrategyPickerView: View {
                     VStack(spacing: 8) {
                         ForEach(availableStrategies) { s in
                             Button {
+                                Haptics.selection()
                                 selected = s
                                 dismiss()
                             } label: {

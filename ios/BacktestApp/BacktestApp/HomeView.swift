@@ -65,6 +65,7 @@ struct HomeView: View {
 
                 // Get started button
                 Button {
+                    Haptics.tap()
                     withAnimation(.easeInOut(duration: 0.3)) {
                         showHome = false
                     }

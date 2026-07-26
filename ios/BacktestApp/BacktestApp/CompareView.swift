@@ -11,7 +11,7 @@ struct CompareView: View {
 
                 // Nav
                 HStack {
-                    Button { dismiss() } label: {
+                    Button { Haptics.tap(); dismiss() } label: {
                         HStack(spacing: 4) {
                             Image(systemName: "xmark")
                                 .font(.system(size: 13, weight: .semibold))
