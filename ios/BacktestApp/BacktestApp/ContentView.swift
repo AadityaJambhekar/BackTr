@@ -9,6 +9,8 @@ struct ContentView: View {
     @State private var compareResult: CompareResponse? = nil
     @State private var isComparing = false
     @State private var compareError: String? = nil
+    @State private var suggestions: [TickerSuggestion] = []
+    @FocusState private var tickerFieldFocused: Bool
 
     var body: some View {
         NavigationView {
@@ -47,24 +49,58 @@ struct ContentView: View {
                                 .foregroundColor(.white)
                                 .textInputAutocapitalization(.characters)
                                 .autocorrectionDisabled()
+                                .focused($tickerFieldFocused)
+                                .task(id: vm.ticker) { await fetchSuggestions() }
 
-                            // Quick tickers
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 8) {
-                                    ForEach(quickTickers, id: \.self) { t in
+                            if tickerFieldFocused && !suggestions.isEmpty {
+                                VStack(spacing: 0) {
+                                    ForEach(suggestions) { s in
                                         Button {
                                             Haptics.selection()
-                                            vm.ticker = t
+                                            vm.ticker = s.symbol
+                                            suggestions = []
+                                            tickerFieldFocused = false
                                         } label: {
-                                            Text(t)
-                                                .font(.system(size: 12, weight: .semibold))
-                                                .foregroundColor(vm.ticker == t ? .white : .backtrSub)
-                                                .padding(.horizontal, 12)
-                                                .padding(.vertical, 6)
-                                                .background(vm.ticker == t ? Color.backtrAccent : Color.backtrBorder.opacity(0.6))
-                                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                            HStack {
+                                                VStack(alignment: .leading, spacing: 1) {
+                                                    Text(s.symbol)
+                                                        .font(.system(size: 14, weight: .bold))
+                                                        .foregroundColor(.white)
+                                                    Text(s.name)
+                                                        .font(.system(size: 11))
+                                                        .foregroundColor(.backtrMuted)
+                                                        .lineLimit(1)
+                                                }
+                                                Spacer()
+                                            }
+                                            .padding(.vertical, 8)
+                                            .contentShape(Rectangle())
                                         }
                                         .buttonStyle(.plain)
+                                        if s.id != suggestions.last?.id {
+                                            Divider().background(Color.backtrBorder)
+                                        }
+                                    }
+                                }
+                            } else {
+                                // Quick tickers
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 8) {
+                                        ForEach(quickTickers, id: \.self) { t in
+                                            Button {
+                                                Haptics.selection()
+                                                vm.ticker = t
+                                            } label: {
+                                                Text(t)
+                                                    .font(.system(size: 12, weight: .semibold))
+                                                    .foregroundColor(vm.ticker == t ? .white : .backtrSub)
+                                                    .padding(.horizontal, 12)
+                                                    .padding(.vertical, 6)
+                                                    .background(vm.ticker == t ? Color.backtrAccent : Color.backtrBorder.opacity(0.6))
+                                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                            }
+                                            .buttonStyle(.plain)
+                                        }
                                     }
                                 }
                             }
@@ -259,6 +295,20 @@ struct ContentView: View {
 
     private func fmt(_ date: Date) -> String {
         let f = DateFormatter(); f.dateFormat = "MMM d, yyyy"; return f.string(from: date)
+    }
+
+    private func fetchSuggestions() async {
+        let query = vm.ticker.trimmingCharacters(in: .whitespaces)
+        guard query.count >= 1 else { suggestions = []; return }
+        try? await Task.sleep(nanoseconds: 300_000_000)
+        guard !Task.isCancelled else { return }
+        do {
+            let results = try await BacktestService().searchSymbols(query: query)
+            guard !Task.isCancelled else { return }
+            suggestions = results
+        } catch {
+            suggestions = []
+        }
     }
 }
 

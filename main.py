@@ -106,6 +106,28 @@ def health():
     return {"status": "ok"}
 
 
+@app.get("/symbols/search")
+def search_symbols(q: str = Query(..., min_length=1, max_length=20)):
+    query = q.strip()
+    if not query:
+        return {"results": []}
+    try:
+        quotes = yf.Search(query, max_results=8).quotes
+    except Exception as e:
+        logger.warning(f"Symbol search failed for '{query}': {e}")
+        return {"results": []}
+
+    results, seen = [], set()
+    for item in quotes:
+        symbol = item.get("symbol")
+        quote_type = item.get("quoteType")
+        if not symbol or quote_type not in ("EQUITY", "ETF") or symbol in seen:
+            continue
+        seen.add(symbol)
+        results.append({"symbol": symbol, "name": item.get("shortname") or item.get("longname") or ""})
+    return {"results": results}
+
+
 @app.get("/strategies")
 def list_strategies():
     return {"strategies": [

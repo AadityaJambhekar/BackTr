@@ -59,4 +59,22 @@ class BacktestService: ObservableObject {
             start_date: startDate, end_date: endDate,
             initial_capital: initialCapital))
     }
+
+    func searchSymbols(query: String) async throws -> [TickerSuggestion] {
+        guard var components = URLComponents(string: "\(Self.baseURL)/symbols/search") else { throw BacktestError.badURL }
+        components.queryItems = [URLQueryItem(name: "q", value: query)]
+        guard let url = components.url else { throw BacktestError.badURL }
+
+        let (data, response): (Data, URLResponse)
+        do { (data, response) = try await URLSession.shared.data(from: url) }
+        catch { throw BacktestError.networkError(error) }
+
+        if let http = response as? HTTPURLResponse, !(200...299).contains(http.statusCode) {
+            throw BacktestError.badStatus(http.statusCode,
+                String(data: data, encoding: .utf8) ?? "Unknown error")
+        }
+
+        do { return try JSONDecoder().decode(SymbolSearchResponse.self, from: data).results }
+        catch { throw BacktestError.decodingError(error) }
+    }
 }

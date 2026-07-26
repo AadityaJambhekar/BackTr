@@ -109,6 +109,16 @@ struct Trade: Decodable, Identifiable {
     }
 }
 
+struct TickerSuggestion: Decodable, Identifiable {
+    var id: String { symbol }
+    let symbol: String
+    let name: String
+}
+
+struct SymbolSearchResponse: Decodable {
+    let results: [TickerSuggestion]
+}
+
 struct Strategy: Identifiable, Hashable {
     let id: String
     let name: String
