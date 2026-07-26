@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from strategies import STRATEGY_MAP
-from backtest import run_backtest
+from backtest import run_backtest, benchmark_curve, generate_insight, _resample
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -82,6 +82,22 @@ def _run(ticker, start_date, end_date, strategy, initial_capital):
         raise HTTPException(422, f"Unknown strategy. Valid: {list(STRATEGY_MAP)}")
     df = _fetch(ticker, str(s), str(e))
     result = run_backtest(df, STRATEGY_MAP[strategy](df), initial_capital)
+
+    if ticker == "SPY":
+        spy_equity, spy_return_pct = benchmark_curve(df["Close"], initial_capital)
+    else:
+        try:
+            spy_df = _fetch("SPY", str(s), str(e))
+            spy_equity, spy_return_pct = benchmark_curve(spy_df["Close"], initial_capital)
+        except HTTPException:
+            spy_equity, spy_return_pct = None, None
+
+    result["metrics"]["spy_return_pct"] = spy_return_pct
+    result["spy_curve"] = _resample(spy_equity, "spy") if spy_equity is not None else []
+
+    strategy_name = STRATEGY_NAMES.get(strategy, strategy)
+    result["ai_insight"] = generate_insight(result["metrics"], strategy_name)
+
     return {"ticker": ticker, "start_date": start_date, "end_date": end_date, "strategy": strategy, **result}
 
 

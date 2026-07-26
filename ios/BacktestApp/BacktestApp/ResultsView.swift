@@ -39,6 +39,25 @@ struct ResultsView: View {
                     }
                     .padding(.top, 8)
 
+                    // AI insight
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack(spacing: 6) {
+                            Image(systemName: "sparkles")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundColor(.backtrAccent)
+                            Text("AI INSIGHT")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundColor(.backtrMuted)
+                                .kerning(0.4)
+                        }
+                        Text(result.ai_insight)
+                            .font(.system(size: 13))
+                            .foregroundColor(.backtrSub)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .padding(16)
+                    .backtrCard()
+
                     // Hero return
                     VStack(alignment: .leading, spacing: 6) {
                         Text("TOTAL RETURN · \(yearRange())")
@@ -72,6 +91,12 @@ struct ResultsView: View {
                         MetricTile(label: "WIN RATE",  value: formatPct(result.metrics.win_rate_pct, showPlus: false), color: result.metrics.win_rate_pct >= 50 ? .backtrGreen : .backtrRed)
                         MetricTile(label: "TRADES",    value: "\(result.metrics.num_trades)", color: .white)
                         MetricTile(label: "ALPHA",     value: formatPct(result.metrics.alpha, showPlus: true), color: result.metrics.alpha >= 0 ? .backtrGreen : .backtrRed)
+                        MetricTile(label: "CAGR",      value: formatPct(result.metrics.cagr_pct, showPlus: true), color: result.metrics.cagr_pct >= 0 ? .backtrGreen : .backtrRed)
+                        MetricTile(label: "SORTINO",   value: String(format: "%.2f", result.metrics.sortino_ratio), color: result.metrics.sortino_ratio >= 1 ? .backtrGreen : .white)
+                        MetricTile(label: "CALMAR",    value: String(format: "%.2f", result.metrics.calmar_ratio), color: result.metrics.calmar_ratio >= 1 ? .backtrGreen : .white)
+                        MetricTile(label: "PROFIT FACTOR", value: formatProfitFactor(result.metrics.profit_factor), color: (result.metrics.profit_factor ?? 0) >= 1 ? .backtrGreen : .white)
+                        MetricTile(label: "AVG DURATION", value: "\(String(format: "%.0f", result.metrics.avg_trade_duration_days))d", color: .white)
+                        MetricTile(label: "EXPOSURE",  value: formatPct(result.metrics.exposure_pct, showPlus: false), color: .white)
                     }
 
                     // Chart
@@ -80,7 +105,7 @@ struct ResultsView: View {
                             .font(.system(size: 11, weight: .semibold))
                             .foregroundColor(.backtrMuted)
                             .kerning(0.4)
-                        EquityChartView(equityCurve: result.equity_curve, bahCurve: result.bah_curve)
+                        EquityChartView(equityCurve: result.equity_curve, bahCurve: result.bah_curve, spyCurve: result.spy_curve)
                     }
                     .padding(16)
                     .backtrCard()
@@ -148,6 +173,11 @@ struct ResultsView: View {
         return String(format: "$%.0f", v)
     }
 
+    private func formatProfitFactor(_ v: Double?) -> String {
+        guard let v else { return "∞" }
+        return String(format: "%.2f", v)
+    }
+
     private func shareText() -> String {
         let r = result.metrics
         let plus = r.total_return_pct > 0 ? "+" : ""
@@ -157,9 +187,12 @@ struct ResultsView: View {
 
         Total Return: \(plus)\(String(format: "%.1f", r.total_return_pct))%
         vs Buy & Hold: \(String(format: "%.1f", r.bah_return_pct))%
+        vs SPY: \(r.spy_return_pct.map { String(format: "%.1f", $0) + "%" } ?? "n/a")
         Alpha: \(alphaPct)
 
+        CAGR: \(String(format: "%.1f", r.cagr_pct))%
         Sharpe Ratio: \(String(format: "%.2f", r.sharpe_ratio))
+        Sortino Ratio: \(String(format: "%.2f", r.sortino_ratio))
         Max Drawdown: \(String(format: "%.1f", r.max_drawdown_pct))%
         Win Rate: \(String(format: "%.1f", r.win_rate_pct))%
         Trades: \(r.num_trades)

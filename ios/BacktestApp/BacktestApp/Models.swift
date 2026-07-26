@@ -24,7 +24,9 @@ struct BacktestResponse: Decodable {
     let price_curve: [PricePoint]
     let equity_curve: [EquityPoint]
     let bah_curve: [BAHPoint]
+    let spy_curve: [SPYPoint]
     let trade_log: [Trade]
+    let ai_insight: String
 }
 
 struct CompareResponse: Decodable {
@@ -54,6 +56,13 @@ struct Metrics: Decodable {
     let bah_return_pct: Double
     let max_drawdown_pct: Double
     let sharpe_ratio: Double
+    let sortino_ratio: Double
+    let calmar_ratio: Double
+    let cagr_pct: Double
+    let profit_factor: Double?
+    let avg_trade_duration_days: Double
+    let exposure_pct: Double
+    let spy_return_pct: Double?
     let num_trades: Int
     let win_rate_pct: Double
     let final_equity: Double
@@ -78,6 +87,12 @@ struct BAHPoint: Decodable, Identifiable {
     var id: String { date }
     let date: String
     let bah: Double
+}
+
+struct SPYPoint: Decodable, Identifiable {
+    var id: String { date }
+    let date: String
+    let spy: Double
 }
 
 struct Trade: Decodable, Identifiable {
