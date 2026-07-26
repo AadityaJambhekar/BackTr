@@ -26,7 +26,7 @@ struct HomeView: View {
                             .font(.system(size: 36, weight: .bold))
                             .foregroundColor(.white)
                             .kerning(-0.8)
-                        Text("tr")
+                        Text("Tr")
                             .font(.system(size: 36, weight: .bold))
                             .foregroundColor(.backtrAccent)
                             .kerning(-0.8)

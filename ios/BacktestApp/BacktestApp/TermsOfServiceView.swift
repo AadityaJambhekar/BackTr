@@ -44,7 +44,7 @@ struct TermsOfServiceView: View {
                             .fill(Color.backtrBorder)
                             .frame(height: 1)
 
-                        Text("These Terms of Service (\"Terms\") govern your access to and use of the Backtr mobile application (the \"App\"), operated as an independent, individually-developed hobby project. By downloading, accessing, or using the App, you agree to be bound by these Terms. If you do not agree, you should not use the App.")
+                        Text("These Terms of Service (\"Terms\") govern your access to and use of the BackTr mobile application (the \"App\"), operated as an independent, individually-developed hobby project. By downloading, accessing, or using the App, you agree to be bound by these Terms. If you do not agree, you should not use the App.")
                             .documentBody()
 
                         // Prominent disclaimer callout

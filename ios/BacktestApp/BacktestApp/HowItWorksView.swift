@@ -26,7 +26,7 @@ struct HowItWorksView: View {
                     .padding(.top, 8)
 
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("How Backtr Works")
+                        Text("How BackTr Works")
                             .font(.system(size: 26, weight: .bold))
                             .foregroundColor(.white)
                         Text("A quick guide to running a backtest and reading the results.")
@@ -79,7 +79,7 @@ struct HowItWorksView: View {
                     .padding(20)
                     .backtrCard()
 
-                    Text("Backtr simulates historical performance for research and entertainment. It's not a recommendation to buy or sell anything — see Terms of Service for details.")
+                    Text("BackTr simulates historical performance for research and entertainment. It's not a recommendation to buy or sell anything — see Terms of Service for details.")
                         .font(.system(size: 11))
                         .foregroundColor(.backtrMuted)
                         .fixedSize(horizontal: false, vertical: true)

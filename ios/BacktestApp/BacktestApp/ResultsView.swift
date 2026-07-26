@@ -220,7 +220,7 @@ struct ResultsView: View {
         let plus = r.total_return_pct > 0 ? "+" : ""
         let alphaPct = String(format: "%@%.1f%%", r.alpha >= 0 ? "+" : "", r.alpha)
         return """
-        Backtr — \(result.ticker) · \(strategyName()) · \(yearRange())
+        BackTr — \(result.ticker) · \(strategyName()) · \(yearRange())
 
         Total Return: \(plus)\(String(format: "%.1f", r.total_return_pct))%
         vs Buy & Hold: \(String(format: "%.1f", r.bah_return_pct))%
@@ -234,7 +234,7 @@ struct ResultsView: View {
         Win Rate: \(String(format: "%.1f", r.win_rate_pct))%
         Trades: \(r.num_trades)
 
-        Tested with Backtr
+        Tested with BackTr
         """
     }
 
@@ -269,7 +269,7 @@ struct ShareCardView: View {
                 VStack(alignment: .leading, spacing: 1) {
                     HStack(spacing: 0) {
                         Text("Back").foregroundColor(.white)
-                        Text("tr").foregroundColor(.backtrAccent)
+                        Text("Tr").foregroundColor(.backtrAccent)
                     }
                     .font(.system(size: 16, weight: .bold))
                     Text("\(result.ticker) · \(strategyName) · \(yearRange)")

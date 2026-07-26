@@ -30,7 +30,7 @@ struct ContentView: View {
                                     .font(.system(size: 24, weight: .bold))
                                     .foregroundColor(.white)
                                     .kerning(-0.5)
-                                Text("tr")
+                                Text("Tr")
                                     .font(.system(size: 24, weight: .bold))
                                     .foregroundColor(.backtrAccent)
                                     .kerning(-0.5)
