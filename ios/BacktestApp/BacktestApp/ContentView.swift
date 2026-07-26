@@ -11,6 +11,8 @@ struct ContentView: View {
     @State private var compareError: String? = nil
     @State private var suggestions: [TickerSuggestion] = []
     @FocusState private var tickerFieldFocused: Bool
+    @StateObject private var savedStore = SavedBacktestsStore()
+    @State private var showSaved = false
 
     var body: some View {
         NavigationView {
@@ -33,9 +35,15 @@ struct ContentView: View {
                                     .kerning(-0.5)
                             }
                             Spacer()
-                            Text("Strategy Backtester")
-                                .font(.system(size: 12))
-                                .foregroundColor(.backtrMuted)
+                            Button {
+                                Haptics.tap()
+                                showSaved = true
+                            } label: {
+                                Image(systemName: savedStore.items.isEmpty ? "bookmark" : "bookmark.fill")
+                                    .font(.system(size: 16))
+                                    .foregroundColor(.backtrAccent)
+                            }
+                            .buttonStyle(.plain)
                         }
                         .padding(.top, 8)
                         .padding(.bottom, 4)
@@ -261,13 +269,16 @@ struct ContentView: View {
             }
             .navigationBarHidden(true)
             .sheet(isPresented: $showResults, onDismiss: { vm.reset() }) {
-                if let result = vm.result { ResultsView(result: result) }
+                if let result = vm.result { ResultsView(result: result).environmentObject(savedStore) }
             }
             .sheet(isPresented: $showStrategyPicker) {
                 StrategyPickerView(selected: $vm.selectedStrategy)
             }
             .sheet(isPresented: $showCompare) {
                 if let cr = compareResult { CompareView(result: cr) }
+            }
+            .sheet(isPresented: $showSaved) {
+                SavedBacktestsView().environmentObject(savedStore)
             }
         }
         .preferredColorScheme(.dark)

@@ -15,7 +15,7 @@ struct CompareRequest: Encodable {
     let initial_capital: Double
 }
 
-struct BacktestResponse: Decodable {
+struct BacktestResponse: Codable {
     let ticker: String
     let strategy: String
     let start_date: String
@@ -27,6 +27,13 @@ struct BacktestResponse: Decodable {
     let spy_curve: [SPYPoint]
     let trade_log: [Trade]
     let ai_insight: String
+    let walk_forward: [WalkForwardWindow]
+}
+
+struct SavedBacktest: Codable, Identifiable {
+    let id: UUID
+    let savedAt: Date
+    let response: BacktestResponse
 }
 
 struct CompareResponse: Decodable {
@@ -51,7 +58,7 @@ struct CompareResult: Decodable, Identifiable {
     let final_equity: Double
 }
 
-struct Metrics: Decodable {
+struct Metrics: Codable {
     let total_return_pct: Double
     let bah_return_pct: Double
     let max_drawdown_pct: Double
@@ -71,31 +78,31 @@ struct Metrics: Decodable {
     var alpha: Double { total_return_pct - bah_return_pct }
 }
 
-struct PricePoint: Decodable, Identifiable {
+struct PricePoint: Codable, Identifiable {
     var id: String { date }
     let date: String
     let price: Double
 }
 
-struct EquityPoint: Decodable, Identifiable {
+struct EquityPoint: Codable, Identifiable {
     var id: String { date }
     let date: String
     let equity: Double
 }
 
-struct BAHPoint: Decodable, Identifiable {
+struct BAHPoint: Codable, Identifiable {
     var id: String { date }
     let date: String
     let bah: Double
 }
 
-struct SPYPoint: Decodable, Identifiable {
+struct SPYPoint: Codable, Identifiable {
     var id: String { date }
     let date: String
     let spy: Double
 }
 
-struct Trade: Decodable, Identifiable {
+struct Trade: Codable, Identifiable {
     var id: String { entry_date + exit_date }
     let entry_date: String
     let exit_date: String
@@ -107,6 +114,16 @@ struct Trade: Decodable, Identifiable {
     func dollarPnl(capital: Double) -> Double {
         capital * pnl_pct / 100
     }
+}
+
+struct WalkForwardWindow: Codable, Identifiable {
+    var id: String { start_date + end_date }
+    let start_date: String
+    let end_date: String
+    let total_return_pct: Double
+    let bah_return_pct: Double
+    let num_trades: Int
+    let win_rate_pct: Double
 }
 
 struct TickerSuggestion: Decodable, Identifiable {

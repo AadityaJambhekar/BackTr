@@ -86,6 +86,43 @@ def generate_insight(metrics, strategy_name):
     return " ".join(parts)
 
 
+def walk_forward_windows(df, signals, initial_capital=10_000.0, n_windows=4):
+    """
+    Split the already-computed strategy signals into N consecutive, non-overlapping
+    windows and re-run the backtest independently (fresh capital) in each one.
+
+    This does NOT re-fit or re-optimize anything — the strategies here have fixed
+    parameters — it just shows whether the strategy's overall return came from
+    consistent performance across the whole period, or from one lucky stretch.
+    """
+    n = len(df)
+    if n < n_windows * 30:
+        return []
+
+    edges = [round(i * n / n_windows) for i in range(n_windows + 1)]
+    windows = []
+    for i in range(n_windows):
+        lo, hi = edges[i], edges[i + 1]
+        if hi - lo < 20:
+            continue
+        sub_df = df.iloc[lo:hi]
+        sub_signals = signals.iloc[lo:hi]
+        try:
+            sub_result = run_backtest(sub_df, sub_signals, initial_capital)
+        except Exception:
+            continue
+        m = sub_result["metrics"]
+        windows.append({
+            "start_date": str(sub_df.index[0].date()),
+            "end_date": str(sub_df.index[-1].date()),
+            "total_return_pct": m["total_return_pct"],
+            "bah_return_pct": m["bah_return_pct"],
+            "num_trades": m["num_trades"],
+            "win_rate_pct": m["win_rate_pct"],
+        })
+    return windows
+
+
 def run_backtest(df, signals, initial_capital=10_000.0):
     close = df["Close"].copy()
 

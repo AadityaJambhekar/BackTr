@@ -2,6 +2,8 @@ import SwiftUI
 
 struct HomeView: View {
     @Binding var showHome: Bool
+    @State private var showHowItWorks = false
+    @State private var showTerms = false
 
     var body: some View {
         ZStack {
@@ -41,52 +43,65 @@ struct HomeView: View {
 
                 Spacer()
 
-                // How to use
-                VStack(alignment: .leading, spacing: 0) {
-                    SectionLabel("How It Works")
-                        .padding(.bottom, 14)
+                // Actions
+                VStack(spacing: 10) {
+                    Button {
+                        Haptics.tap()
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            showHome = false
+                        }
+                    } label: {
+                        HStack(spacing: 8) {
+                            Text("Get Started")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundColor(.white)
+                            Image(systemName: "arrow.right")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(.white)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 52)
+                        .background(Color.backtrAccent)
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                    }
+                    .buttonStyle(.plain)
 
-                    StepRow(number: "1", title: "Pick a stock", subtitle: "Enter any ticker — AAPL, TSLA, MSFT")
-                    Divider().background(Color.backtrBorder).padding(.vertical, 12)
-                    StepRow(number: "2", title: "Choose a strategy", subtitle: "MACD, RSI, Bollinger Bands and more")
-                    Divider().background(Color.backtrBorder).padding(.vertical, 12)
-                    StepRow(number: "3", title: "See what would have happened", subtitle: "Returns, drawdown, Sharpe ratio, every trade")
+                    Button {
+                        Haptics.tap()
+                        showHowItWorks = true
+                    } label: {
+                        Text("How It Works")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundColor(.backtrSub)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 48)
+                            .background(Color.backtrCard)
+                            .clipShape(RoundedRectangle(cornerRadius: 14))
+                            .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.backtrBorder, lineWidth: 0.5))
+                    }
+                    .buttonStyle(.plain)
                 }
-                .padding(20)
-                .background(Color.backtrCard)
-                .clipShape(RoundedRectangle(cornerRadius: 20))
-                .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.backtrBorder, lineWidth: 0.5))
                 .padding(.horizontal, 20)
 
-                Spacer().frame(height: 32)
+                Spacer().frame(height: 20)
 
-                // Get started button
                 Button {
                     Haptics.tap()
-                    withAnimation(.easeInOut(duration: 0.3)) {
-                        showHome = false
-                    }
+                    showTerms = true
                 } label: {
-                    HStack(spacing: 8) {
-                        Text("Get Started")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(.white)
-                        Image(systemName: "arrow.right")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundColor(.white)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 52)
-                    .background(Color.backtrAccent)
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    Text("Terms of Service")
+                        .font(.system(size: 12))
+                        .foregroundColor(.backtrMuted)
+                        .underline()
                 }
                 .buttonStyle(.plain)
-                .padding(.horizontal, 20)
 
-                Spacer().frame(height: 48)
+                Spacer().frame(height: 40)
             }
         }
         .preferredColorScheme(.dark)
+        .sheet(isPresented: $showHowItWorks) { HowItWorksView() }
+        .sheet(isPresented: $showTerms) { TermsOfServiceView() }
     }
 }
 

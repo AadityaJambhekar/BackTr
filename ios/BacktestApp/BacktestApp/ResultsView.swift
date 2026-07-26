@@ -4,7 +4,9 @@ import Charts
 struct ResultsView: View {
     let result: BacktestResponse
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var savedStore: SavedBacktestsStore
     @State private var showShare = false
+    @State private var isSaved = false
 
     var body: some View {
         ZStack {
@@ -28,13 +30,26 @@ struct ResultsView: View {
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundColor(.white)
                         Spacer()
-                        Button { Haptics.tap(); showShare = true } label: {
-                            Image(systemName: "square.and.arrow.up")
-                                .font(.system(size: 15))
-                                .foregroundColor(.backtrAccent)
-                        }
-                        .sheet(isPresented: $showShare) {
-                            ShareSheet(items: [shareText()])
+                        HStack(spacing: 16) {
+                            Button {
+                                Haptics.tap()
+                                if !isSaved {
+                                    savedStore.save(result)
+                                    isSaved = true
+                                }
+                            } label: {
+                                Image(systemName: isSaved ? "bookmark.fill" : "bookmark")
+                                    .font(.system(size: 15))
+                                    .foregroundColor(.backtrAccent)
+                            }
+                            Button { Haptics.tap(); showShare = true } label: {
+                                Image(systemName: "square.and.arrow.up")
+                                    .font(.system(size: 15))
+                                    .foregroundColor(.backtrAccent)
+                            }
+                            .sheet(isPresented: $showShare) {
+                                ShareSheet(items: [shareText()])
+                            }
                         }
                     }
                     .padding(.top, 8)
@@ -111,6 +126,29 @@ struct ResultsView: View {
                     }
                     .padding(16)
                     .backtrCard()
+
+                    // Consistency across sub-periods (walk-forward, no re-fitting — fixed strategy rules)
+                    if !result.walk_forward.isEmpty {
+                        VStack(alignment: .leading, spacing: 10) {
+                            SectionLabel("Consistency")
+                            Text("How this strategy did in each stretch of the period, run independently — a big total from one lucky stretch looks different from steady gains across all of them.")
+                                .font(.system(size: 11))
+                                .foregroundColor(.backtrMuted)
+                                .fixedSize(horizontal: false, vertical: true)
+
+                            VStack(spacing: 0) {
+                                ForEach(result.walk_forward) { window in
+                                    WalkForwardRow(window: window)
+                                    if window.id != result.walk_forward.last?.id {
+                                        Divider().background(Color.backtrBorder)
+                                    }
+                                }
+                            }
+                            .padding(.top, 4)
+                        }
+                        .padding(16)
+                        .backtrCard()
+                    }
 
                     // Trade log
                     VStack(alignment: .leading, spacing: 10) {
@@ -218,6 +256,42 @@ struct MetricTile: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(12)
         .backtrCard(radius: 12)
+    }
+}
+
+struct WalkForwardRow: View {
+    let window: WalkForwardWindow
+    private var beatsBah: Bool { window.total_return_pct >= window.bah_return_pct }
+
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("\(shortDate(window.start_date)) – \(shortDate(window.end_date))")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.white)
+                Text("\(window.num_trades) trades · \(String(format: "%.0f", window.win_rate_pct))% win rate")
+                    .font(.system(size: 10))
+                    .foregroundColor(.backtrMuted)
+            }
+            Spacer()
+            VStack(alignment: .trailing, spacing: 2) {
+                Text(String(format: "%@%.1f%%", window.total_return_pct >= 0 ? "+" : "", window.total_return_pct))
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(window.total_return_pct >= 0 ? .backtrGreen : .backtrRed)
+                Text(beatsBah ? "beat market" : "trailed market")
+                    .font(.system(size: 10))
+                    .foregroundColor(.backtrMuted)
+            }
+        }
+        .padding(.vertical, 10)
+    }
+
+    private func shortDate(_ s: String) -> String {
+        let parts = s.split(separator: "-")
+        guard parts.count == 3 else { return s }
+        let months = ["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+        let m = Int(parts[1]) ?? 0
+        return "\(months[m]) '\(parts[0].suffix(2))"
     }
 }
 

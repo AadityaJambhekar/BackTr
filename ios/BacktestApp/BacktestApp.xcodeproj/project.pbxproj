@@ -19,6 +19,10 @@
 		AA000010 /* CompareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100010; };
 		AA000011 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA100011; };
 		AA000012 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA100012; };
+		AA000013 /* HowItWorksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100013; };
+		AA000014 /* TermsOfServiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100014; };
+		AA000015 /* SavedBacktestsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100015; };
+		AA000016 /* SavedBacktestsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100016; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +38,10 @@
 		AA100010 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompareView.swift; sourceTree = "<group>"; };
 		AA100011 = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AA100012 = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		AA100013 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HowItWorksView.swift; sourceTree = "<group>"; };
+		AA100014 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsOfServiceView.swift; sourceTree = "<group>"; };
+		AA100015 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedBacktestsStore.swift; sourceTree = "<group>"; };
+		AA100016 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedBacktestsView.swift; sourceTree = "<group>"; };
 		AA200001 = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BacktestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -49,7 +57,7 @@
 /* Begin PBXGroup section */
 		AA400001 = {
 			isa = PBXGroup;
-			children = (AA100001, AA100002, AA100003, AA100004, AA100005, AA100006, AA100007, AA100008, AA100009, AA100010, AA100011, AA100012);
+			children = (AA100001, AA100002, AA100003, AA100004, AA100005, AA100006, AA100007, AA100008, AA100009, AA100010, AA100011, AA100012, AA100013, AA100014, AA100015, AA100016);
 			path = BacktestApp;
 			sourceTree = "<group>";
 		};
@@ -115,7 +123,7 @@
 		AA600001 = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
-			files = (AA000001, AA000002, AA000003, AA000004, AA000005, AA000006, AA000007, AA000008, AA000009, AA000010);
+			files = (AA000001, AA000002, AA000003, AA000004, AA000005, AA000006, AA000007, AA000008, AA000009, AA000010, AA000013, AA000014, AA000015, AA000016);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
@@ -162,6 +170,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = BackTr;
 				INFOPLIST_KEY_NSAppTransportSecurity = "<dict><key>NSAllowsLocalNetworking</key><true/><key>NSExceptionDomains</key><dict><key>localhost</key><dict><key>NSExceptionAllowsInsecureHTTPLoads</key><true/></dict></dict></dict>";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -185,6 +194,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = BackTr;
 				INFOPLIST_KEY_NSAppTransportSecurity = "<dict><key>NSAllowsLocalNetworking</key><true/><key>NSAllowsArbitraryLoads</key><true/></dict>";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
