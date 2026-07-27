@@ -60,6 +60,15 @@ class BacktestService: ObservableObject {
             initial_capital: initialCapital))
     }
 
+    /// Fire-and-forget usage ping — failures are not surfaced, this must never affect the UI.
+    func logOpen() async {
+        guard let url = URL(string: "\(Self.baseURL)/analytics/open") else { return }
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.timeoutInterval = 10
+        _ = try? await URLSession.shared.data(for: request)
+    }
+
     func searchSymbols(query: String) async throws -> [TickerSuggestion] {
         guard var components = URLComponents(string: "\(Self.baseURL)/symbols/search") else { throw BacktestError.badURL }
         components.queryItems = [URLQueryItem(name: "q", value: query)]

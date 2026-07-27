@@ -16,6 +16,9 @@ struct BacktestAppApp: App {
                 }
             }
             .animation(.easeInOut(duration: 0.3), value: showHome)
+            .task {
+                await BacktestService().logOpen()
+            }
         }
     }
 }

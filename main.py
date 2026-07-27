@@ -1,8 +1,10 @@
 from __future__ import annotations
 import logging
+import os
 from datetime import date, timedelta
 from typing import Literal
 
+import psycopg2
 import yfinance as yf
 import pandas as pd
 from fastapi import FastAPI, HTTPException, Query
@@ -17,6 +19,53 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Backtest API", version="1.0.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+
+def _db_connection():
+    return psycopg2.connect(DATABASE_URL)
+
+
+def _init_analytics_db():
+    if not DATABASE_URL:
+        logger.warning("DATABASE_URL not set — analytics logging disabled.")
+        return
+    try:
+        with _db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    CREATE TABLE IF NOT EXISTS analytics (
+                        id SERIAL PRIMARY KEY,
+                        event_type TEXT NOT NULL,
+                        ticker TEXT,
+                        strategy TEXT,
+                        timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW()
+                    )
+                """)
+        logger.info("Analytics table ready.")
+    except Exception as e:
+        logger.warning(f"Analytics DB init failed: {e}")
+
+
+def _log_analytics_event(event_type, ticker=None, strategy=None):
+    """Best-effort event log — never let analytics failures break a real request."""
+    if not DATABASE_URL:
+        return
+    try:
+        with _db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "INSERT INTO analytics (event_type, ticker, strategy) VALUES (%s, %s, %s)",
+                    (event_type, ticker, strategy),
+                )
+    except Exception as e:
+        logger.warning(f"Analytics log failed: {e}")
+
+
+@app.on_event("startup")
+def _on_startup():
+    _init_analytics_db()
 
 StrategyName = Literal["macd", "rsi", "bollinger", "moving_average", "breakout", "ensemble"]
 
@@ -100,12 +149,85 @@ def _run(ticker, start_date, end_date, strategy, initial_capital):
     strategy_name = STRATEGY_NAMES.get(strategy, strategy)
     result["ai_insight"] = generate_insight(result["metrics"], strategy_name)
 
+    _log_analytics_event("backtest", ticker=ticker, strategy=strategy)
+
     return {"ticker": ticker, "start_date": start_date, "end_date": end_date, "strategy": strategy, **result}
 
 
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+class AnalyticsBacktestEvent(BaseModel):
+    ticker: str
+    strategy: str
+
+
+@app.post("/analytics/open")
+def analytics_open():
+    _log_analytics_event("open")
+    return {"status": "logged"}
+
+
+@app.post("/analytics/backtest")
+def analytics_backtest(req: AnalyticsBacktestEvent):
+    _log_analytics_event("backtest", ticker=req.ticker.upper().strip(), strategy=req.strategy)
+    return {"status": "logged"}
+
+
+@app.get("/analytics/stats")
+def analytics_stats():
+    if not DATABASE_URL:
+        raise HTTPException(503, "Analytics not configured.")
+    try:
+        with _db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT COUNT(*) FROM analytics WHERE event_type = 'open'")
+                total_opens = cur.fetchone()[0]
+
+                cur.execute("SELECT COUNT(*) FROM analytics WHERE event_type = 'backtest'")
+                total_backtests = cur.fetchone()[0]
+
+                cur.execute("""
+                    SELECT ticker FROM analytics
+                    WHERE event_type = 'backtest' AND ticker IS NOT NULL
+                    GROUP BY ticker ORDER BY COUNT(*) DESC LIMIT 1
+                """)
+                row = cur.fetchone()
+                most_popular_ticker = row[0] if row else None
+
+                cur.execute("""
+                    SELECT strategy FROM analytics
+                    WHERE event_type = 'backtest' AND strategy IS NOT NULL
+                    GROUP BY strategy ORDER BY COUNT(*) DESC LIMIT 1
+                """)
+                row = cur.fetchone()
+                most_popular_strategy = row[0] if row else None
+
+                cur.execute("""
+                    SELECT COUNT(*) FROM analytics
+                    WHERE event_type = 'backtest' AND timestamp >= date_trunc('day', NOW())
+                """)
+                backtests_today = cur.fetchone()[0]
+
+                cur.execute("""
+                    SELECT COUNT(*) FROM analytics
+                    WHERE event_type = 'backtest' AND timestamp >= NOW() - INTERVAL '7 days'
+                """)
+                backtests_this_week = cur.fetchone()[0]
+    except Exception as e:
+        logger.warning(f"Analytics stats query failed: {e}")
+        raise HTTPException(503, "Analytics temporarily unavailable.")
+
+    return {
+        "total_opens": total_opens,
+        "total_backtests": total_backtests,
+        "most_popular_ticker": most_popular_ticker,
+        "most_popular_strategy": most_popular_strategy,
+        "backtests_today": backtests_today,
+        "backtests_this_week": backtests_this_week,
+    }
 
 
 @app.get("/symbols/search")
