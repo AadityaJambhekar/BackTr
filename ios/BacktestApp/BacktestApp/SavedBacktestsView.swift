@@ -104,7 +104,8 @@ struct SavedBacktestRow: View {
             Spacer()
             VStack(alignment: .trailing, spacing: 6) {
                 Text(formatPct(item.response.metrics.total_return_pct))
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.backtrDisplay(16))
+                    .monospacedDigit()
                     .foregroundColor(item.response.metrics.total_return_pct >= 0 ? .backtrGreen : .backtrRed)
                 Button(action: onDelete) {
                     Image(systemName: "trash")

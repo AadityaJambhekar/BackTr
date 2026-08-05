@@ -59,7 +59,8 @@ struct ResultsView: View {
                         SectionLabel("Total Return · \(yearRange())")
 
                         Text(formatPct(result.metrics.total_return_pct, showPlus: true))
-                            .font(.system(size: 56, weight: .bold))
+                            .font(.backtrDisplay(56))
+                            .monospacedDigit()
                             .foregroundColor(result.metrics.total_return_pct >= 0 ? .backtrGreen : .backtrRed)
 
                         HStack(spacing: 6) {
@@ -271,7 +272,7 @@ struct ShareCardView: View {
                         Text("Back").foregroundColor(.white)
                         Text("Tr").foregroundColor(.backtrAccent)
                     }
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.backtrDisplay(16))
                     Text("\(result.ticker) · \(strategyName) · \(yearRange)")
                         .font(.system(size: 11))
                         .foregroundColor(.backtrMuted)
@@ -281,7 +282,8 @@ struct ShareCardView: View {
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(formatPct(result.metrics.total_return_pct))
-                    .font(.system(size: 44, weight: .bold))
+                    .font(.backtrDisplay(44))
+                    .monospacedDigit()
                     .foregroundColor(result.metrics.total_return_pct >= 0 ? .backtrGreen : .backtrRed)
                 Text("vs Buy & Hold \(formatPct(result.metrics.bah_return_pct)) · Alpha \(formatPct(result.metrics.alpha))")
                     .font(.system(size: 12))
@@ -310,7 +312,8 @@ struct ShareCardView: View {
                 .foregroundColor(.backtrMuted)
                 .tracking(0.4)
             Text(value)
-                .font(.system(size: 13, weight: .bold))
+                .font(.system(size: 13, weight: .bold, design: .rounded))
+                .monospacedDigit()
                 .foregroundColor(.white)
         }
         .frame(maxWidth: .infinity)
@@ -331,7 +334,8 @@ struct MetricTile: View {
         VStack(alignment: .leading, spacing: 6) {
             SectionLabel(label)
             Text(value)
-                .font(.system(size: 18, weight: .bold))
+                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .monospacedDigit()
                 .foregroundColor(color)
                 .minimumScaleFactor(0.7)
                 .lineLimit(1)
@@ -359,7 +363,8 @@ struct WalkForwardRow: View {
             Spacer()
             VStack(alignment: .trailing, spacing: 2) {
                 Text(String(format: "%@%.1f%%", window.total_return_pct >= 0 ? "+" : "", window.total_return_pct))
-                    .font(.system(size: 14, weight: .bold))
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .monospacedDigit()
                     .foregroundColor(window.total_return_pct >= 0 ? .backtrGreen : .backtrRed)
                 Text(beatsBah ? "beat market" : "trailed market")
                     .font(.system(size: 10))
@@ -406,10 +411,12 @@ struct TradeRow: View {
             VStack(alignment: .trailing, spacing: 3) {
                 let dollars = trade.dollarPnl(capital: capital)
                 Text(String(format: "%@$%.0f", dollars >= 0 ? "+" : "-", abs(dollars)))
-                    .font(.system(size: 14, weight: .bold))
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .monospacedDigit()
                     .foregroundColor(isWin ? .backtrGreen : .backtrRed)
                 Text(String(format: "%@%.1f%%", trade.pnl_pct >= 0 ? "+" : "", trade.pnl_pct))
                     .font(.system(size: 11))
+                    .monospacedDigit()
                     .foregroundColor(isWin ? .backtrGreen.opacity(0.7) : .backtrRed.opacity(0.7))
             }
         }

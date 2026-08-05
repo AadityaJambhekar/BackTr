@@ -27,11 +27,11 @@ struct ContentView: View {
                         HStack {
                             HStack(spacing: 0) {
                                 Text("Back")
-                                    .font(.system(size: 24, weight: .bold))
+                                    .font(.backtrDisplay(24))
                                     .foregroundColor(.white)
                                     .kerning(-0.5)
                                 Text("Tr")
-                                    .font(.system(size: 24, weight: .bold))
+                                    .font(.backtrDisplay(24))
                                     .foregroundColor(.backtrAccent)
                                     .kerning(-0.5)
                             }
@@ -67,7 +67,7 @@ struct ContentView: View {
                             SectionLabel("Ticker")
 
                             TextField("e.g. AAPL", text: $vm.ticker)
-                                .font(.system(size: 28, weight: .bold))
+                                .font(.backtrDisplay(28))
                                 .foregroundColor(.white)
                                 .textInputAutocapitalization(.characters)
                                 .autocorrectionDisabled()
@@ -194,7 +194,7 @@ struct ContentView: View {
                                     .font(.system(size: 22, weight: .bold))
                                     .foregroundColor(.backtrSub)
                                 TextField("10000", text: $vm.initialCapital)
-                                    .font(.system(size: 22, weight: .bold))
+                                    .font(.system(size: 22, weight: .bold, design: .rounded))
                                     .foregroundColor(.white)
                                     .keyboardType(.numberPad)
                             }
@@ -232,11 +232,9 @@ struct ContentView: View {
                             }
                             .frame(maxWidth: .infinity)
                             .frame(height: 52)
-                            .background(Color.backtrAccent)
-                            .clipShape(RoundedRectangle(cornerRadius: 14))
                             .opacity(vm.isLoading ? 0.7 : 1.0)
                         }
-                        .buttonStyle(.plain)
+                        .buttonStyle(BacktrPrimaryButtonStyle())
                         .disabled(vm.isLoading || isComparing)
 
                         // Compare button
@@ -261,12 +259,9 @@ struct ContentView: View {
                             }
                             .frame(maxWidth: .infinity)
                             .frame(height: 48)
-                            .background(Color.backtrAccent.opacity(0.12))
-                            .clipShape(RoundedRectangle(cornerRadius: 14))
-                            .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.backtrAccent.opacity(0.3), lineWidth: 1))
                             .opacity(isComparing ? 0.7 : 1.0)
                         }
-                        .buttonStyle(.plain)
+                        .buttonStyle(BacktrTintedButtonStyle())
                         .disabled(vm.isLoading || isComparing)
 
                         // Errors

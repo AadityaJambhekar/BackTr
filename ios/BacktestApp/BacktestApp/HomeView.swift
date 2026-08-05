@@ -23,11 +23,11 @@ struct HomeView: View {
 
                     HStack(spacing: 0) {
                         Text("Back")
-                            .font(.system(size: 36, weight: .bold))
+                            .font(.backtrDisplay(36))
                             .foregroundColor(.white)
                             .kerning(-0.8)
                         Text("Tr")
-                            .font(.system(size: 36, weight: .bold))
+                            .font(.backtrDisplay(36))
                             .foregroundColor(.backtrAccent)
                             .kerning(-0.8)
                     }
@@ -58,10 +58,8 @@ struct HomeView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .frame(height: 52)
-                        .background(Color.backtrAccent)
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(BacktrPrimaryButtonStyle())
 
                     Button {
                         Haptics.tap()
@@ -72,11 +70,8 @@ struct HomeView: View {
                             .foregroundColor(.backtrSub)
                             .frame(maxWidth: .infinity)
                             .frame(height: 48)
-                            .background(Color.backtrCard)
-                            .clipShape(RoundedRectangle(cornerRadius: 14))
-                            .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.backtrBorder, lineWidth: 0.5))
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(BacktrSecondaryButtonStyle())
                 }
                 .padding(.horizontal, 20)
 

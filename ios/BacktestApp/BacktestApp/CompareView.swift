@@ -45,7 +45,8 @@ struct CompareView: View {
                         .foregroundColor(.backtrMuted)
                     Spacer()
                     Text(formatPct(result.bah_return_pct, showPlus: true))
-                        .font(.system(size: 13, weight: .bold))
+                        .font(.system(size: 13, weight: .bold, design: .rounded))
+                        .monospacedDigit()
                         .foregroundColor(.orange)
                 }
                 .padding(.horizontal, 20)
@@ -111,7 +112,8 @@ struct CompareRow: View {
                         }
                         Spacer()
                         Text(formatPct(result.total_return_pct, showPlus: true))
-                            .font(.system(size: 20, weight: .bold))
+                            .font(.backtrDisplay(20))
+                            .monospacedDigit()
                             .foregroundColor(returnColor)
                     }
 
@@ -167,7 +169,8 @@ struct StatChip: View {
         VStack(spacing: 3) {
             SectionLabel(label)
             Text(value)
-                .font(.system(size: 13, weight: .bold))
+                .font(.system(size: 13, weight: .bold, design: .rounded))
+                .monospacedDigit()
                 .foregroundColor(color)
                 .minimumScaleFactor(0.7)
                 .lineLimit(1)

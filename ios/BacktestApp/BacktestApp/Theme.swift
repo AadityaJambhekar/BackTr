@@ -59,3 +59,50 @@ struct SectionLabel: View {
             .tracking(0.6)
     }
 }
+
+extension Font {
+    /// Rounded design gives the wordmark and hero numbers a friendlier, less
+    /// generic-sans feel than plain .system, while staying native SF.
+    static func backtrDisplay(_ size: CGFloat, weight: Weight = .bold) -> Font {
+        .system(size: size, weight: weight, design: .rounded)
+    }
+}
+
+/// Pill-shaped primary action. Capsule (not the 14pt rounded-rect cards use)
+/// keeps buttons visually distinct from containers, with a tactile press state.
+struct BacktrPrimaryButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .background(Color.backtrAccent)
+            .clipShape(Capsule())
+            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+            .opacity(configuration.isPressed ? 0.85 : 1.0)
+            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
+    }
+}
+
+/// Pill-shaped secondary action — tinted outline, same press feedback as primary.
+struct BacktrSecondaryButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .background(Color.backtrCard)
+            .clipShape(Capsule())
+            .overlay(Capsule().stroke(Color.backtrBorder, lineWidth: 0.5))
+            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+            .opacity(configuration.isPressed ? 0.85 : 1.0)
+            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
+    }
+}
+
+/// Tinted pill for secondary CTAs that need accent color (e.g. "Compare All Strategies").
+struct BacktrTintedButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .background(Color.backtrAccent.opacity(0.12))
+            .clipShape(Capsule())
+            .overlay(Capsule().stroke(Color.backtrAccent.opacity(0.3), lineWidth: 1))
+            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+            .opacity(configuration.isPressed ? 0.85 : 1.0)
+            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
+    }
+}
